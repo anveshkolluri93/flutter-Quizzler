@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_alert/flutter_alert.dart';
 
 import 'quiz_brain.dart';
 
@@ -29,21 +30,34 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Widget> scoreList = [];
+  int score = 0;
 
   void checkAnswer(bool userPickedAnswer) {
     bool correctAnswer = quizBrain.getAnswer();
-    if (userPickedAnswer == correctAnswer) {
-      setState(() {
-        quizBrain.nextQuestion();
-      });
-      scoreList.add(
-        Icon(Icons.check, color: Colors.green),
-      );
-    } else {
-      scoreList.add(
-        Icon(Icons.close, color: Colors.red),
-      );
-    }
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        showAlert(
+          context: context,
+          title: 'Finished!',
+          body: 'FINISHED GAME- YOUR score is $score',
+        );
+        quizBrain.reset();
+        scoreList = [];
+        score = 0;
+        return;
+      }
+      if (userPickedAnswer == correctAnswer) {
+        scoreList.add(
+          Icon(Icons.check, color: Colors.green),
+        );
+        score++;
+      } else {
+        scoreList.add(
+          Icon(Icons.close, color: Colors.red),
+        );
+      }
+      quizBrain.nextQuestion();
+    });
   }
 
   @override
